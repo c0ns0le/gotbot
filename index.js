@@ -22,6 +22,10 @@ app.get('/gotbot', function (request, response) {
     response.render('pages/gotbot');
 });
 
+app.get('/webhooks', function (request, response) {
+    response.render('pages/webhooks');
+});
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
