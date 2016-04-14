@@ -116,6 +116,13 @@ app.post('/webhooks/', function (req, res) {
       for (i = 0; i < messaging_events.length; i++) {
         var event = req.body.entry[0].messaging[i];
         var sender = event.sender.id;
+
+        if (event.postback) {
+            text = JSON.stringify(event.postback);
+            sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token);
+            continue;
+        }
+
         if (event.message && event.message.text) {
           var text = event.message.text;
           // Handle a text message from this sender
@@ -125,9 +132,8 @@ app.post('/webhooks/', function (req, res) {
             sendGenericMessage(sender);
           } else {
             sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200));
-          }
-          
-        }
+          }          
+        } 
       }
       res.sendStatus(200);
     }
