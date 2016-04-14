@@ -77,7 +77,7 @@ app.post('/webhooks/', function (req, res) {
       res.sendStatus(200);
     }
 
-    processIncomingRequest();
+    processIncomingRequest(req, res);
 });
 
 app.listen(app.get('port'), function() {
