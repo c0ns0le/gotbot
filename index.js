@@ -23,10 +23,10 @@ app.get('/gotbot', function (request, response) {
 });
 
 app.get('/webhooks', function (request, response) {
-  if (req.query['hub.verify_token'] === '<validation_token>') {
-    res.send(req.query['hub.challenge']);
+  if (request.query['hub.verify_token'] === '<validation_token>') {
+    response.send(request.query['hub.challenge']);
   }
-  res.send('Error, wrong validation token');
+  request.send('Error, wrong validation token');
 });
 
 app.listen(app.get('port'), function() {
