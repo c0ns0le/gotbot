@@ -26,7 +26,7 @@ app.get('/webhooks', function (request, response) {
   if (request.query['hub.verify_token'] === '<validation_token>') {
     response.send(request.query['hub.challenge']);
   }
-  request.send('Error, wrong validation token');
+  response.send('Error, wrong validation token');
 });
 
 app.listen(app.get('port'), function() {
