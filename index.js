@@ -30,6 +30,8 @@ app.get('/webhooks', function (request, response) {
 });
 
 app.post('/webhooks/', function (req, res) {
+
+  console.log('incoming-request' + JSON.stringify(req));
   messaging_events = req.body.entry[0].messaging;
   for (i = 0; i < messaging_events.length; i++) {
     event = req.body.entry[0].messaging[i];
