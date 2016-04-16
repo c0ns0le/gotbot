@@ -1,3 +1,4 @@
+var user = require('./user');
 var cool = require('cool-ascii-faces');
 var bodyParser = require('body-parser');
 var multer = require('multer');
@@ -34,9 +35,11 @@ app.get('/webhooks', function (request, response) {
   response.send('Error, wrong validation token');
 });
 
+var userMap = {};
+
 app.post('/webhooks/', function (req, res) {
 
-    var token = 'CAAXinhPErpYBAFbb7CZAhGMs3QA7I2qYVqQdahC8ZBE7TllPxMmpROZCzfDzNIVmn4NMmFHxgf164uzcBQxbLfs5S8w6nZCT6aSnG1ZAzyWoQNflfBWG9lZBIK7cuorAxyZC1Ipfd1daZCh0zlqlzMumBBEGxTv2eCdwAwmp6NLc1zsU2U03Azz2uJNrN1JLzOgZD';
+    var token = 'CAAXinhPErpYBAFbb7CZAhGMs3QA7I2qYVqQdahC8ZBE7TllPxMmpROZCzfDzNIVmn4NMmFHxgf164uzcBQxbLfs5S8w6nZCT6aSnG1ZAzyWoQNflfBWG9lZBIK7cuorAxyZC1Ipfd1daZCh0zlqlzMumBBEGxTv2eCdwAwmp6NLc1zsU2U03Azz2uJNrN1JLzOgZD';    
 
     function finalSendMessage(sender, messageData) {
       request({
@@ -150,21 +153,21 @@ app.post('/webhooks/', function (req, res) {
       });
     }
 
-    function processMessage(sender, text) {
+    function processMessage(sender, userInfo, text) {
 
         var query = text.toLowerCase(); // Query alteration
 
         if (query.indexOf('bill') > -1) {
           sendBillSummaryMessage(sender, text);
           return;
-        } 
+        }
         
         if (query.indexOf('gotbot') > -1) {
           sendGenericMessage(sender);
           return;
         } 
 
-        sendTextMessage(sender, "echo: "+ text.substring(0, 200));
+        sendTextMessage(sender, 'Hi ' + userInfo.first_name + '. echo: ' + text.substring(0, 200));
     }
 
     function processIncomingRequest(req, res) {
@@ -185,7 +188,25 @@ app.post('/webhooks/', function (req, res) {
           // Handle a text message from this sender
           console.log('message-received: ' + text);
 
-          processMessage(sender, text);
+          if (userMap[sender] === undefined) {
+            user.getUserInfo(sender, token, function (err, userInfo) {
+
+              if (!!userInfo) {
+                userMap[sender] = userInfo;  
+              } else {
+                userMap[sender] = {first_name: 'unknown', last_name: 'unknown'};
+              }
+              
+              var welcomeString = 'Hi ' + userMap[sender].first_name + ' ' + userMap[sender].last_name + '. Great to hear from you.';
+              sendTextMessage(sender, welcomeString);
+
+              setTimeout(function () {
+                processMessage(sender, userMap[sender], text);
+              }, 2000);
+            });
+          } else {
+            processMessage(sender, userMap[sender], text);
+          }
         }
       }
       res.sendStatus(200);
