@@ -40,6 +40,8 @@ var userMap = {};
 app.post('/webhooks/', function (req, res) {
 
     var token = 'CAAXinhPErpYBAFbb7CZAhGMs3QA7I2qYVqQdahC8ZBE7TllPxMmpROZCzfDzNIVmn4NMmFHxgf164uzcBQxbLfs5S8w6nZCT6aSnG1ZAzyWoQNflfBWG9lZBIK7cuorAxyZC1Ipfd1daZCh0zlqlzMumBBEGxTv2eCdwAwmp6NLc1zsU2U03Azz2uJNrN1JLzOgZD';
+    var human = true;
+    var bot = false;
 
     function finalSendMessage(sender, messageData) {
       request({
@@ -130,7 +132,23 @@ app.post('/webhooks/', function (req, res) {
       finalSendMessage(sender, messageData);
     }
 
-    function sendTextMessage(sender, text) {
+    function sendUpsellMessage(sender) {
+      sendTextMessage(sender, "Upsell! Upsell!", human, 2000);
+    };
+
+    function sendTextMessage(sender, text, isHuman, afterTime) {
+
+      if (afterTime !== undefined) {
+        setTimeout(function () {
+          sendTextMessage(sender, text, isHuman);
+        }, afterTime);
+        return;
+      }
+
+      if (isHuman !== human) {
+        text = text + '\n*T-Force bot';
+      }
+
       messageData = {
         text:text
       }
@@ -162,8 +180,26 @@ app.post('/webhooks/', function (req, res) {
           return;
         }
 
+        if (query.indexOf('data') > -1) {
+            sendTextMessage(sender, "Our team is looking into this. We will get back to you shortly", bot, 3000);
+            sendTextMessage(sender, "Hi! We looked into your records and found that you have been " +
+              "watching lot of \"media\" on 3G cellular network. Do you have WIFi turned on, We strongly suggest using WiFi whenever available" +
+              "Let us know if there is anything else we can help you with?\n*JacobG", human, 15000);
+
+          return;
+        }
         if (query.indexOf('gotbot') > -1) {
           sendGenericMessage(sender);
+          return;
+        }
+
+        if (query.indexOf('reset') > -1) {
+          userMap[sender] = undefined;
+          return;
+        }
+
+        if (query.indexOf('thank') > -1) {
+          sendUpsellMessage(sender);
           return;
         }
 
@@ -208,9 +244,7 @@ app.post('/webhooks/', function (req, res) {
 
               userInfo.authenticated = 0;
 
-              setTimeout(function () {
-                sendTextMessage(sender, randomPinMessages[0]);
-              }, 100);
+              sendTextMessage(sender, randomPinMessages[0], bot, 1500);
             });
           } else {
             if (userInfo.authenticated >= 0) {
@@ -224,7 +258,6 @@ app.post('/webhooks/', function (req, res) {
             } else {
               processMessage(sender, userInfo, text);
             }
-
           }
         }
       }
