@@ -215,14 +215,16 @@ app.post('/webhooks/', function (req, res) {
           } else {
             if (userInfo.authenticated >= 0) {
                if (text.indexOf("1234") === -1) {
-                 userInfo.authenticated = Math.max(userInfo.authenticated +  1, randomPinMessages.length -1);
+                 userInfo.authenticated = Math.min(userInfo.authenticated +  1, randomPinMessages.length -1);
                  sendTextMessage(sender, randomPinMessages[userInfo.authenticated]);
                } else {
                   userInfo.authenticated = -1;
                   sendTextMessage(sender, "Thats great! How may I help you Mr " + userInfo.last_name);
                }
+            } else {
+              processMessage(sender, userInfo, text);
             }
-            processMessage(sender, userInfo, text);
+
           }
         }
       }
