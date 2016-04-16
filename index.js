@@ -80,19 +80,19 @@ app.post('/webhooks/', function (req, res) {
               "subtitle": "Select the billing topic you need help with",
               "buttons": [{
                 "type": "web_url",
-                "url": "https://support.t-mobile.com/community/billing/payments"
+                "url": "https://support.t-mobile.com/community/billing/payments",
                 "title": "Payments"
               }, {
                 "type": "web_url",
-                "url": "https://support.t-mobile.com/docs/DOC-1674"
+                "url": "https://support.t-mobile.com/docs/DOC-1674",
                 "title": "Equipment Installment Plan"
               }, {
                 "type": "web_url",
-                "url": "https://support.t-mobile.com/community/billing/manage-your-bill"
+                "url": "https://support.t-mobile.com/community/billing/manage-your-bill",
                 "title": "Manage your bill"
               }, {
                 "type": "web_url",
-                "url": "https://support.t-mobile.com/community/billing/programs"
+                "url": "https://support.t-mobile.com/community/billing/programs",
                 "title": "Billing programs"
               }],
             }]
