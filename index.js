@@ -131,9 +131,9 @@ app.post('/webhooks/', function (req, res) {
           if (text.indexOf('gotbot') > -1) {
             sendGenericMessage(sender);
           } else {
-            sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200));
-          }          
-        } 
+            sendTextMessage(sender, "Text received, echo mak: "+ text.substring(0, 200));
+          }
+        }
       }
       res.sendStatus(200);
     }
