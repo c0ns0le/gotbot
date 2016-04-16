@@ -38,6 +38,71 @@ app.post('/webhooks/', function (req, res) {
 
     var token = 'CAAXinhPErpYBAFbb7CZAhGMs3QA7I2qYVqQdahC8ZBE7TllPxMmpROZCzfDzNIVmn4NMmFHxgf164uzcBQxbLfs5S8w6nZCT6aSnG1ZAzyWoQNflfBWG9lZBIK7cuorAxyZC1Ipfd1daZCh0zlqlzMumBBEGxTv2eCdwAwmp6NLc1zsU2U03Azz2uJNrN1JLzOgZD';
 
+    function finalSendMessage(sender, messageData) {
+      request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token:token},
+        method: 'POST',
+        json: {
+          recipient: {id:sender},
+          message: messageData,
+        }
+      }, function(error, response, body) {
+        if (error) {
+          console.log('Error sending message: ', error);
+        } else if (response.body.error) {
+          console.log('Error: ', response.body.error);
+        }
+      });
+    }
+
+    function sendBillSummaryMessage(sender) {
+      messageData = {
+        "attachment": {
+          "type": "template",
+          "payload": {
+            "template_type": "generic",
+            "elements": [{
+              "title": "Monthly Statement",
+              "subtitle": "Summary",
+              "image_url": "http://boiling-earth-21093.herokuapp.com/tmobilebillsummary.jpg",
+              "buttons": [{
+                "type": "web_url",
+                "url": "http://boiling-earth-21093.herokuapp.com/tmobilebilldetail.jpg",
+                "title": "Details"
+              }, {
+                "type": "postback",
+                "title": "Pay now",
+                "payload": "{tmobile-pay-now}",
+              }],
+            },{
+              "title": "Billing topics",
+              "subtitle": "Select the billing topic you need help with",
+              "buttons": [{
+                "type": "web_url",
+                "url": "https://support.t-mobile.com/community/billing/payments"
+                "title": "Payments"
+              }, {
+                "type": "web_url",
+                "url": "https://support.t-mobile.com/docs/DOC-1674"
+                "title": "Equipment Installment Plan"
+              }, {
+                "type": "web_url",
+                "url": "https://support.t-mobile.com/community/billing/manage-your-bill"
+                "title": "Manage your bill"
+              }, {
+                "type": "web_url",
+                "url": "https://support.t-mobile.com/community/billing/programs"
+                "title": "Billing programs"
+              }],
+            }]
+          }
+        }
+      };
+
+      finalSendMessage(sender, messageData);
+    }
+
     function sendGenericMessage(sender) {
       messageData = {
         "attachment": {
@@ -70,21 +135,8 @@ app.post('/webhooks/', function (req, res) {
           }
         }
       };
-      request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token:token},
-        method: 'POST',
-        json: {
-          recipient: {id:sender},
-          message: messageData,
-        }
-      }, function(error, response, body) {
-        if (error) {
-          console.log('Error sending message: ', error);
-        } else if (response.body.error) {
-          console.log('Error: ', response.body.error);
-        }
-      });
+
+      finalSendMessage(sender, messageData);
     }
 
     function sendTextMessage(sender, text) {
@@ -110,6 +162,23 @@ app.post('/webhooks/', function (req, res) {
       });
     }
 
+    function processMessage(sender, text) {
+
+        var query = text.toLowerCase(); // Query alteration
+
+        if (query.indexOf('bill') > -1) {
+          sendBillSummaryMessage(sender, text);
+          return;
+        } 
+        
+        if (query.indexOf('gotbot') > -1) {
+          sendGenericMessage(sender);
+          return;
+        } 
+
+        sendTextMessage(sender, "echo: "+ text.substring(0, 200));
+    }
+
     function processIncomingRequest(req, res) {
       console.log('incoming-request' + JSON.stringify(req.body));
       messaging_events = req.body.entry[0].messaging;
@@ -128,11 +197,7 @@ app.post('/webhooks/', function (req, res) {
           // Handle a text message from this sender
           console.log('message-received: ' + text);
 
-          if (text.indexOf('gotbot') > -1) {
-            sendGenericMessage(sender);
-          } else {
-            sendTextMessage(sender, "Text received, echo mak: "+ text.substring(0, 200));
-          }
+          processMessage(sender, text);
         }
       }
       res.sendStatus(200);
