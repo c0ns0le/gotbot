@@ -39,7 +39,7 @@ var userMap = {};
 
 app.post('/webhooks/', function (req, res) {
 
-    var token = 'CAAXinhPErpYBAFbb7CZAhGMs3QA7I2qYVqQdahC8ZBE7TllPxMmpROZCzfDzNIVmn4NMmFHxgf164uzcBQxbLfs5S8w6nZCT6aSnG1ZAzyWoQNflfBWG9lZBIK7cuorAxyZC1Ipfd1daZCh0zlqlzMumBBEGxTv2eCdwAwmp6NLc1zsU2U03Azz2uJNrN1JLzOgZD';    
+    var token = 'CAAXinhPErpYBAFbb7CZAhGMs3QA7I2qYVqQdahC8ZBE7TllPxMmpROZCzfDzNIVmn4NMmFHxgf164uzcBQxbLfs5S8w6nZCT6aSnG1ZAzyWoQNflfBWG9lZBIK7cuorAxyZC1Ipfd1daZCh0zlqlzMumBBEGxTv2eCdwAwmp6NLc1zsU2U03Azz2uJNrN1JLzOgZD';
 
     function finalSendMessage(sender, messageData) {
       request({
@@ -161,11 +161,11 @@ app.post('/webhooks/', function (req, res) {
           sendBillSummaryMessage(sender, text);
           return;
         }
-        
+
         if (query.indexOf('gotbot') > -1) {
           sendGenericMessage(sender);
           return;
-        } 
+        }
 
         sendTextMessage(sender, 'Hi ' + userInfo.first_name + '. echo: ' + text.substring(0, 200));
     }
@@ -188,24 +188,41 @@ app.post('/webhooks/', function (req, res) {
           // Handle a text message from this sender
           console.log('message-received: ' + text);
 
-          if (userMap[sender] === undefined) {
-            user.getUserInfo(sender, token, function (err, userInfo) {
+          var randomPinMessages = [
+            "Please enter last 4 digits of your SSN to authenticate.",
+            "I need your SSN before we can help you.",
+            "You cannot procceed without 4 digits of your SSN",
+            "SSN Please!",
+            "I am sorry we cannot help you here. GO AWAY!"
+          ];
 
-              if (!!userInfo) {
-                userMap[sender] = userInfo;  
-              } else {
-                userMap[sender] = {first_name: 'unknown', last_name: 'unknown'};
-              }
-              
-              var welcomeString = 'Hi ' + userMap[sender].first_name + ' ' + userMap[sender].last_name + '. Great to hear from you.';
+          var userInfo = userMap[sender];
+          if (userInfo === undefined) {
+            user.getUserInfo(sender, token, function (err, userInformation) {
+              userInfo = userInformation || {first_name: 'unknown', last_name: 'unknown'};
+              userMap[sender] = userInfo;
+
+              var welcomeString = 'Hi ' + userInfo.first_name + ' ' + userInfo.last_name + '. Great to hear from you.';
+
               sendTextMessage(sender, welcomeString);
 
+              userInfo.authenticated = 0;
+
               setTimeout(function () {
-                processMessage(sender, userMap[sender], text);
-              }, 2000);
+                sendTextMessage(sender, randomPinMessages[0]);
+              }, 100);
             });
           } else {
-            processMessage(sender, userMap[sender], text);
+            if (userInfo.authenticated >= 0) {
+               if (text.indexOf("1234") === -1) {
+                 userInfo.authenticated = Math.max(userInfo.authenticated +  1, randomPinMessages.length -1);
+                 sendTextMessage(sender, randomPinMessages[userInfo.authenticated]);
+               } else {
+                  userInfo.authenticated = -1;
+                  sendTextMessage(sender, "Thats great! How may I help you Mr " + userInfo.last_name);
+               }
+            }
+            processMessage(sender, userInfo, text);
           }
         }
       }
