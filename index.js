@@ -114,6 +114,8 @@ app.post('/webhooks/', function (req, res) {
     }
 
     function sendBillSummaryMessage(sender) {
+      console.log('sending bill summary message');
+      
       messageData = {
         "attachment": {
           "type": "template",
