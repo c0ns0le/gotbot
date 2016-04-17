@@ -312,6 +312,11 @@ app.post('/webhooks/', function (req, res) {
         if (query.indexOf('ok sure') > -1) {
           sendUpsellMessage(sender);
           return;
+        }
+
+        if (query.indexOf('very cool') > -1) {
+          sendTextMessage(sender, "Yup, the uncarrier is way cool!", bot, 1500);
+          return;
         }        
 
         sendTextMessage(sender, 'Hi ' + userInfo.first_name + '. echo: ' + text.substring(0, 200));
