@@ -259,6 +259,7 @@ app.post('/webhooks/', function (req, res) {
 
         if (query.indexOf('ok sure') > -1) {
           sendUpsellMessage(sender);
+          return;
         }        
 
         sendTextMessage(sender, 'Hi ' + userInfo.first_name + '. echo: ' + text.substring(0, 200));
