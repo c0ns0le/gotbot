@@ -272,8 +272,21 @@ app.post('/webhooks/', function (req, res) {
         var sender = event.sender.id;
 
         if (event.postback) {
-            text = JSON.stringify(event.postback);
-            sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token);
+            text = JSON.stringify(event.postback).toLowerCase();
+
+            if (text.indexOf('iphone se') > -1) {
+              sendTextMessage(sender, "Great, im working on order a new iphone se for you. *JacobG", human, 2000);
+              sendTextMessage(sender, "Your order is confirmed and will ship soon!", human, 10000);
+            } else if (text.indexOf('iphone 6s') > -1) {
+              sendTextMessage(sender, "Great, im working on order a new iphone 6s for you. *JacobG", human, 2000);
+              sendTextMessage(sender, "Your order is confirmed and will ship soon!", human, 10000);
+            } else if (text.indexOf('galaxy s7') > -1) {
+              sendTextMessage(sender, "Great, im working on order a new Galaxy s7 for you. *JacobG", human, 2000);
+              sendTextMessage(sender, "Your order is confirmed and will ship soon!", human, 10000);
+            } else {
+              sendTextMessage(sender, "Thats great! hope you have a wonderful day. It was a please serving you."+text.substring(0, 200), token);  
+            }
+            
             continue;
         }
 
