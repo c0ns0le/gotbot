@@ -184,7 +184,7 @@ app.post('/webhooks/', function (req, res) {
             sendTextMessage(sender, "Our team is looking into this. We will get back to you shortly", bot, 3000);
             sendTextMessage(sender, "Hi! We looked into your records and found that you have been " +
               "watching lot of \"media\" on 3G cellular network. Do you have WIFi turned on, We strongly suggest using WiFi whenever available" +
-              "Let us know if there is anything else we can help you with?\n*JacobG", human, 15000);
+              "Let us know if there is anything else we can help you with?\n*JacobG", human, 20000);
 
           return;
         }
