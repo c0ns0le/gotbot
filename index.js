@@ -217,7 +217,7 @@ app.post('/webhooks/', function (req, res) {
                 "payload": "customer wants to order iphone 6s",
               }],
             }, {
-              "title": "Apple iPhone SE",
+              "title": "Samsumg Galaxy S7",
               "subtitle": "$30 /mo. x 24 mos. $59.99 upfront",
               "image_url": "http://boiling-earth-21093.herokuapp.com/galaxy-s7.png",
               "buttons": [{
