@@ -133,7 +133,60 @@ app.post('/webhooks/', function (req, res) {
     }
 
     function sendUpsellMessage(sender) {
-      sendTextMessage(sender, "Upsell! Upsell!", human, 2000);
+      messageData = {
+        "attachment": {
+          "type": "template",
+          "payload": {
+            "template_type": "generic",
+            "elements": [{
+              "title": "Apple iPhone SE",
+              "subtitle": "$16.67 /mo. x 24 mos. $0 upfront",
+              "image_url": "http://boiling-earth-21093.herokuapp.com/iphone-se.jpg",
+              "buttons": [{
+                "type": "web_url",
+                "url": "http://www.t-mobile.com/cell-phones/apple-iphone-se.html#Rose-Gold",
+                "title": "Details"
+              }, {
+                "type": "postback",
+                "title": "Order",
+                "payload": "customer wants to order iphone se",
+              }],
+            }, {
+              "title": "Apple iPhone 6s",
+              "subtitle": "$27.09 /mo. x 24 mos. $0 upfront",
+              "image_url": "http://boiling-earth-21093.herokuapp.com/iphone-6s.jpg",
+              "buttons": [{
+                "type": "web_url",
+                "url": "http://www.t-mobile.com/cell-phones/apple-iphone-6s.html#Space-Gray",
+                "title": "Details"
+              }, {
+                "type": "postback",
+                "title": "Order",
+                "payload": "customer wants to order iphone 6s",
+              }],
+            }, {
+              "title": "Apple iPhone SE",
+              "subtitle": "$30 /mo. x 24 mos. $59.99 upfront",
+              "image_url": "http://boiling-earth-21093.herokuapp.com/galaxy-s7.png",
+              "buttons": [{
+                "type": "web_url",
+                "url": "http://www.t-mobile.com/cell-phones/samsung-galaxy-s7-edge.html#Silver-Titanium",
+                "title": "Details"
+              }, {
+                "type": "postback",
+                "title": "Order",
+                "payload": "customer wants to order galaxy s7",
+              }],
+            }]
+          }
+        }
+      };
+
+      finalSendMessage(sender, messageData);
+    };
+
+    function sendUpsellMessage(sender) {
+      sendTextMessage(sender, "Its our please. We love our customers at the uncarrier! \n\n We noticed that you are eligible for a free phone upgrade. Would you be interested in exploring the latest models similar to your iPhone 5 \n*JacobG", human, 2000);
     };
 
     function sendTextMessage(sender, text, isHuman, afterTime) {
@@ -188,6 +241,7 @@ app.post('/webhooks/', function (req, res) {
 
           return;
         }
+
         if (query.indexOf('gotbot') > -1) {
           sendGenericMessage(sender);
           return;
@@ -199,9 +253,13 @@ app.post('/webhooks/', function (req, res) {
         }
 
         if (query.indexOf('thank') > -1) {
-          sendUpsellMessage(sender);
+          sendUpsellRequest(sender);
           return;
         }
+
+        if (query.indexOf('ok sure') > -1) {
+          sendUpsellMessage(sender);
+        }        
 
         sendTextMessage(sender, 'Hi ' + userInfo.first_name + '. echo: ' + text.substring(0, 200));
     }
