@@ -63,7 +63,12 @@ app.post('/webhooks/', function (req, res) {
 
     function sendReceiptMessage(sender) {
 
+      console.log('in sendReceiptMessage');
+
       setTimeout(function () {
+
+        console.log('after some time in sendReceiptMessage');
+        
         var messageData = {
           "attachment":{
             "type":"template",
@@ -110,12 +115,12 @@ app.post('/webhooks/', function (req, res) {
         }
 
         finalSendMessage(sender, messageData);
-      }, 9000);
+      }, 3000);
     }
 
     function sendBillSummaryMessage(sender) {
       console.log('sending bill summary message');
-      
+
       messageData = {
         "attachment": {
           "type": "template",
