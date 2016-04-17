@@ -61,6 +61,58 @@ app.post('/webhooks/', function (req, res) {
       });
     }
 
+    function sendReceiptMessage(sender) {
+
+      setTimeout(function () {
+        var messageData = {
+          "attachment":{
+            "type":"template",
+            "payload":{
+              "template_type":"receipt",
+              "recipient_name":"Gautam Swaminathan",
+              "order_number":"12345678902",
+              "currency":"USD",
+              "payment_method":"Visa 2345", 
+              "order_url":"http://petersapparel.parseapp.com/order?order_id=123456",
+              "timestamp":"1428444852", 
+              "elements":[
+                {
+                  "title":"IPhone 6S",
+                  "subtitle":"24 months subscription",
+                  "quantity":1,
+                  "price":0,
+                  "currency":"USD",
+                  "image_url":"http://boiling-earth-21093.herokuapp.com/iphone-6s.jpg"
+                }
+              ],
+              "address":{
+                "street_1":"1 Hacker Way",
+                "street_2":"",
+                "city":"Menlo Park",
+                "postal_code":"94025",
+                "state":"CA",
+                "country":"US"
+              },
+              "summary":{
+                "subtotal":0.00,
+                "shipping_cost":4.95,
+                "total_tax":6.19,
+                "total_cost":11.14
+              },
+              "adjustments":[
+                {
+                  "name":"Social discount",
+                  "amount":11.14
+                }
+              ]
+            }
+          }
+        }
+
+        finalSendMessage(sender, messageData);
+      }, 9000);
+    }
+
     function sendBillSummaryMessage(sender) {
       messageData = {
         "attachment": {
@@ -277,13 +329,13 @@ app.post('/webhooks/', function (req, res) {
 
             if (text.indexOf('iphone se') > -1) {
               sendTextMessage(sender, "Great, im working on order a new iphone se for you. *JacobG", human, 2000);
-              sendTextMessage(sender, "Your order is confirmed and will ship soon!", human, 10000);
+              sendReceiptMessage(sender);
             } else if (text.indexOf('iphone 6s') > -1) {
               sendTextMessage(sender, "Great, im working on order a new iphone 6s for you. *JacobG", human, 2000);
-              sendTextMessage(sender, "Your order is confirmed and will ship soon!", human, 10000);
+              sendReceiptMessage(sender);
             } else if (text.indexOf('galaxy s7') > -1) {
               sendTextMessage(sender, "Great, im working on order a new Galaxy s7 for you. *JacobG", human, 2000);
-              sendTextMessage(sender, "Your order is confirmed and will ship soon!", human, 10000);
+              sendReceiptMessage(sender);
             } else {
               sendTextMessage(sender, "Thats great! hope you have a wonderful day. It was a please serving you."+text.substring(0, 200), token);  
             }
