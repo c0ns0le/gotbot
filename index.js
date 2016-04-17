@@ -185,7 +185,7 @@ app.post('/webhooks/', function (req, res) {
       finalSendMessage(sender, messageData);
     };
 
-    function sendUpsellMessage(sender) {
+    function sendUpsellRequest(sender) {
       sendTextMessage(sender, "Its our please. We love our customers at the uncarrier! \n\n We noticed that you are eligible for a free phone upgrade. Would you be interested in exploring the latest models similar to your iPhone 5 \n*JacobG", human, 2000);
     };
 
