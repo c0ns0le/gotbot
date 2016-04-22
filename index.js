@@ -351,7 +351,7 @@ app.post('/webhooks/', function (req, res) {
 
         if (query.indexOf('delhi') > -1) {
           sendTextMessage(sender, 
-            'Great to hear from you ' + userInfo.first_name + 
+            'Great to hear from you ' + userInfo.first_name + '. ' +
             'Absolutly! I\'m pulling up a few options, let me know what interests you',
             human, 1000);
 
