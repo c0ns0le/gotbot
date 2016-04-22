@@ -121,6 +121,33 @@ app.post('/webhooks/', function (req, res) {
       }, 3000);
     }
 
+    function sendItinerary(sender) {
+      console.log('in sendItinerary');
+
+      setTimeout(function () {
+        messageData = {
+          "attachment": {
+            "type": "template",
+            "payload": {
+              "template_type": "generic",
+              "elements": [{
+                "title": "3 days/2 nights: Delhi - Katra – Vaishno Devi – Jammu- Delhi",
+                "subtitle": "$321.99, includes hotel, train tickets, and cave passes.",
+                "description": "Thursday evening: Delhi to  Katra ( Friday morning) by Vaishno Devi express, relax for a while, leave for Vaishno Devi trek whenever ready\n\nFriday : Get back from Vaishno Devi to Katra by night or by Saturday morning.\n\nSaturday: Leave for Jammu in the day time and enjoy the day in Jammu\n\nSunday: Relax in Jammu for the day, explore nearby areas and leave in the evening by New Delhi Premium Special Train to reach Delhi by Monday morning.\n",
+                "buttons": [{
+                  "type": "web_url",
+                  "url": "http://boiling-earth-21093.herokuapp.com/ccpay.jpg",
+                  "title": "Book this trip!"
+                }]
+             }]
+            }
+          }
+        };
+
+        finalSendMessage(sender, messageData);
+      }, 6000);
+    }
+
     function sendReceiptMessage(sender) {
 
       console.log('in sendReceiptMessage');
@@ -411,7 +438,11 @@ app.post('/webhooks/', function (req, res) {
         if (event.postback) {
             text = JSON.stringify(event.postback).toLowerCase();
 
-            if (text.indexOf('iphone se') > -1) {
+            if (text.indexOf('plan jammu') > -1) {
+                sendTextMessage(sender, "Great! Jammu is so breathtakingly beautiful. Im sure you will have a great experience. Here is a possible itinarary. Let me know what you think, and i can look into booking this for you.", human, 2000);
+                sendItinerary(sender);
+            }
+            else if (text.indexOf('iphone se') > -1) {
               sendTextMessage(sender, "Great, im working on order a new iphone se for you. *JacobG", human, 2000);
               sendReceiptMessage(sender);
             } else if (text.indexOf('iphone 6s') > -1) {
