@@ -38,6 +38,8 @@ app.get('/webhooks', function (request, response) {
 var userMap = {};
 var orderNumber = 12345678903;
 
+var shouldAuth = false;
+
 app.post('/webhooks/', function (req, res) {
 
     var token = 'CAAXinhPErpYBAFbb7CZAhGMs3QA7I2qYVqQdahC8ZBE7TllPxMmpROZCzfDzNIVmn4NMmFHxgf164uzcBQxbLfs5S8w6nZCT6aSnG1ZAzyWoQNflfBWG9lZBIK7cuorAxyZC1Ipfd1daZCh0zlqlzMumBBEGxTv2eCdwAwmp6NLc1zsU2U03Azz2uJNrN1JLzOgZD';
@@ -60,6 +62,63 @@ app.post('/webhooks/', function (req, res) {
           console.log('Error: ', response.body.error);
         }
       });
+    }
+
+    function sendDelhiDestinationsMessage(sender) {
+      console.log('in sendDelhiDestinationsMessage');
+
+      setTimeout(function () {
+        messageData = {
+          "attachment": {
+            "type": "template",
+            "payload": {
+              "template_type": "generic",
+              "elements": [{
+                "title": "Agra",
+                "subtitle": "The city of Taj Mahal, the monument of eternal love",
+                "image_url": "http://boiling-earth-21093.herokuapp.com/agra.jpg",
+                "buttons": [{
+                  "type": "web_url",
+                  "url": "http://www.holidify.com/places/agra/",
+                  "title": "Details"
+                }, {
+                  "type": "postback",
+                  "title": "plan this trip",
+                  "payload": "customer wants to plan agra",
+                }],
+              }, {
+                "title": "Dalhousie + Khajjiar",
+                "subtitle": "Little Switzerland of India",
+                "image_url": "http://boiling-earth-21093.herokuapp.com/dalhousie.jpg",
+                "buttons": [{
+                  "type": "web_url",
+                  "url": "http://www.holidify.com/places/dalhousie/",
+                  "title": "Details"
+                }, {
+                  "type": "postback",
+                  "title": "plan this trip",
+                  "payload": "customer wants to plan dalhousie",
+                }],
+              }, {
+                "title": "Jammu + Katra + Vaishno Devi",
+                "subtitle": "City of Temples. The Holy Caves",
+                "image_url": "http://boiling-earth-21093.herokuapp.com/jammu.jpg",
+                "buttons": [{
+                  "type": "web_url",
+                  "url": "http://www.holidify.com/places/jammu/",
+                  "title": "Details"
+                }, {
+                  "type": "postback",
+                  "title": "plan this trip",
+                  "payload": "customer wants to plan jammu",
+                }],
+              }]
+            }
+          }
+        };
+
+        finalSendMessage(sender, messageData);
+      }, 3000);
     }
 
     function sendReceiptMessage(sender) {
@@ -290,6 +349,16 @@ app.post('/webhooks/', function (req, res) {
 
         var query = text.toLowerCase(); // Query alteration
 
+        if (query.indexOf('delhi') > -1) {
+          sendTextMessage(sender, 
+            'Great to hear from you ' + userInfo.first_name + 
+            'Absolutly! I\'m pulling up a few options, let me know what interests you',
+            human, 1000);
+
+          sendDelhiDestinationsMessage(sender);
+          return;
+        }
+
         if (query.indexOf('bill') > -1) {
           sendBillSummaryMessage(sender, text);
           return;
@@ -377,13 +446,15 @@ app.post('/webhooks/', function (req, res) {
               userInfo = userInformation || {first_name: 'unknown', last_name: 'unknown'};
               userMap[sender] = userInfo;
 
-              var welcomeString = 'Hi ' + userInfo.first_name + ' ' + userInfo.last_name + '. Great to hear from you.';
-
-              sendTextMessage(sender, welcomeString);
-
-              userInfo.authenticated = 0;
-
-              sendTextMessage(sender, randomPinMessages[0], bot, 1500);
+              if (shouldAuth === true) {
+                var welcomeString = 'Hi ' + userInfo.first_name + ' ' + userInfo.last_name + '. Great to hear from you.';
+                sendTextMessage(sender, welcomeString);
+                userInfo.authenticated = 0;
+                sendTextMessage(sender, randomPinMessages[0], bot, 1500);
+              } else {
+                userInfo.authenticated = -1;
+                processMessage(sender, userInfo, text);
+              }
             });
           } else {
             if (userInfo.authenticated >= 0) {
