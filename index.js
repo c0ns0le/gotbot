@@ -28,6 +28,10 @@ app.get('/gotbot', function (request, response) {
     response.render('pages/gotbot');
 });
 
+app.get('/itinarary', function (request, response) {
+  response.render('pages/itinarary');
+});
+
 app.get('/webhooks', function (request, response) {
   if (request.query['hub.verify_token'] === 'gotbot') {
     response.send(request.query['hub.challenge']);
@@ -131,9 +135,13 @@ app.post('/webhooks/', function (req, res) {
             "payload": {
               "template_type": "generic",
               "elements": [{
-                "title": "3 days/2 nights: Delhi - Katra – Vaishno Devi – Jammu- Delhi. $321.99, includes hotel, train tickets, and cave passes.",
-                "subtitle": "Thursday evening: Delhi to  Katra ( Friday morning) by Vaishno Devi express, relax for a while, leave for Vaishno Devi trek whenever ready\n\nFriday : Get back from Vaishno Devi to Katra by night or by Saturday morning.\n\nSaturday: Leave for Jammu in the day time and enjoy the day in Jammu\n\nSunday: Relax in Jammu for the day, explore nearby areas and leave in the evening by New Delhi Premium Special Train to reach Delhi by Monday morning.\n",
+                "title": "3 days/2 nights: Delhi - Katra – Vaishno Devi – Jammu- Delhi.",
+                "subtitle": "$321.99, includes hotel, train tickets, and cave passes.",
                 "buttons": [{
+                  "type": "web_url",
+                  "url": "http://boiling-earth-21093.herokuapp.com/itinarary",
+                  "title": "Details"
+                }, {
                   "type": "web_url",
                   "url": "http://boiling-earth-21093.herokuapp.com/ccpay.jpg",
                   "title": "Book this trip!"
