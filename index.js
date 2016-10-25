@@ -42,7 +42,7 @@ app.get('/webhooks', function (request, response) {
 var userMap = {};
 var orderNumber = 12345678903;
 
-var shouldAuth = false;
+var shouldAuth = true;
 
 app.post('/webhooks/', function (req, res) {
 
